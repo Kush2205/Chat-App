@@ -1,0 +1,1 @@
+{"root":["./src/index.ts","./src/routes/authrouter.ts","./src/routes/drawroute.ts","./src/routes/mainrouter.ts"],"version":"5.8.2"}

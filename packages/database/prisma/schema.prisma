@@ -24,8 +24,9 @@ model User {
 }
 
 model Rooms {
-  id       Int    @unique @id @default(autoincrement())
-  admin    String  
+  id       String    @unique @id @default(cuid())
+  slug    String @unique
+  admin    String
   messages Messages[]
 }
 
@@ -35,6 +36,6 @@ model Messages {
   createdAt DateTime @default(now())
   senderId  String
   sender    User     @relation(fields: [senderId], references: [id])
-  roomId    Int
+  roomId    String
   room      Rooms    @relation(fields: [roomId], references: [id])
 }

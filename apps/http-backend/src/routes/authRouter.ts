@@ -23,7 +23,7 @@ export const authRouter:express.Router = express.Router();
              }
         });
          if(user && secret){
-            const token = jwt.sign({id: user.id}, secret);
+            const token = jwt.sign({id: user.id , name : user.name}, secret);
             res.status(200).json({token});
         }
         else{
@@ -57,7 +57,7 @@ authRouter.post('/signup', async(req: Request, res: Response) => {
             });
    
             if(user && secret){
-               const token = jwt.sign({id: user.id}, secret);
+               const token = jwt.sign({id: user.id , name : user.name}, secret);
                res.status(200).json({token});
             }
            }

@@ -6,4 +6,4 @@ import { Router } from 'express';
 export const mainRouter:express.Router = express.Router();
 
 mainRouter.use('/auth', authRouter);
-mainRouter.use('/draw', roomRouter);
+mainRouter.use('/room', roomRouter);

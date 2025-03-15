@@ -1,0 +1,1 @@
+module.exports = require("@repo/tw-config/postcss-config");

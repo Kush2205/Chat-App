@@ -1,31 +1,16 @@
-"use client";
-
-import { text } from "stream/consumers";
-
-interface ButoonProps {
-    text: string;
-    width: string;
-    height: string;
-    backgroundColor?: string | "white"
-    color?: string | "black"
-    onClick?: () => void;
-    textSize?: string;
-
+interface ButtonProps {
+    text : string;
+    onClick : (e: React.FormEvent) => void;
+    children? : React.ReactNode;
+    className? : string;
 }
 
-export function Button(props: ButoonProps) {
+export function Button(props : ButtonProps) {
     return (
-        <button className="rounded-md font-semibold"
-            style={{
-                width: props.width,
-                height: props.height,
-                backgroundColor: props.backgroundColor,
-                color: props.color,
-                fontSize: props.textSize
-            }}
-            onClick={props.onClick}
-        >
+        <button onClick={props.onClick} className={`  py-2 px-4 rounded ${props.className}`}>
             {props.text}
+            {props.children}
         </button>
-    );
+    )
 }
+export default Button

@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { EyeIcon, EyeOffIcon, LockIcon, MailIcon } from 'lucide-react';
 import { Button } from "@repo/ui/button";
-
+import axios from 'axios';
 const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -12,7 +12,7 @@ const SignIn = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-
+  const burl = process.env.NEXT_PUBLIC_HTTP_BACKEND
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -32,27 +32,12 @@ const SignIn = () => {
     
     try {
       
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-      
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.message || 'Sign in failed');
-      }
-      
-     
+      const { data } = await axios.post(`${burl}/api/auth/signin`, { email, password });
+      const { token } = data;
       localStorage.setItem('token', data.token);
-      localStorage.setItem('userId', data.user.id);
-      localStorage.setItem('userName', data.user.name);
-      
-      
-      router.push('/rooms');
+      localStorage.setItem('user', (data.name));
+      localStorage.setItem('userId', (data.userId));
+      router.push('/dashboard');
     } catch (err) {
       console.error('Login error:', err);
       setError(err instanceof Error ? err.message : 'Failed to sign in. Please try again.');

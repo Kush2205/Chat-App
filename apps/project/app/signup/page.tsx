@@ -15,11 +15,11 @@ export default function SignUp() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-
+  const burl = process.env.NEXT_PUBLIC_HTTP_BACKEND
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Basic validation
+    
     if (!name.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
       setError('Please fill in all fields');
       return;
@@ -44,8 +44,8 @@ export default function SignUp() {
     setError(null);
     
     try {
-      // Replace with your actual API endpoint
-      const response = await fetch('/api/auth/register', {
+      
+      const response = await fetch(`${burl}/api/auth/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -59,13 +59,14 @@ export default function SignUp() {
         throw new Error(data.message || 'Sign up failed');
       }
       
-      // Store user data and token, if your API returns them immediately after registration
+     
       localStorage.setItem('token', data.token);
-      localStorage.setItem('userId', data.user.id);
-      localStorage.setItem('userName', data.user.name);
+      localStorage.setItem('user', (data.name));
+      localStorage.setItem('userId', (data.userId));
+     
       
-      // Redirect to rooms or login page
-      router.push('/rooms');
+      
+      router.push('/dashboard');
     } catch (err) {
       console.error('Registration error:', err);
       setError(err instanceof Error ? err.message : 'Failed to sign up. Please try again.');

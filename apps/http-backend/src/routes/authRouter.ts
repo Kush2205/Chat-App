@@ -23,7 +23,7 @@ authRouter.post('/signin', async (req: Request, res: Response) => {
         });
         if (user && secret) {
             const token = jwt.sign({ id: user.id, name: user.name }, secret);
-             res.status(200).json({ token });
+             res.status(200).json({ token : token , name : user.name , userId : user.id });
              return;
         } else {
             res.status(401).json({ error: "Invalid Credentials" });
@@ -64,7 +64,7 @@ authRouter.post('/signup', async (req: Request, res: Response) => {
 
         if (user && secret) {
             const token = jwt.sign({ id: user.id, name: user.name }, secret);
-             res.status(200).json({ token });
+            res.status(200).json({ token : token , name : user.name , userId : user.id });
              return;
         } else {
              res.status(500).json({ error: "Error creating user" });

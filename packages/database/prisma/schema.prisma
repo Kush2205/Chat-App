@@ -21,6 +21,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   messages  Messages[]
+  rooms     Rooms[]
 }
 
 model Rooms {
@@ -28,6 +29,7 @@ model Rooms {
   slug    String @unique
   admin    String
   messages Messages[]
+  users    User[]
 }
 
 model Messages {

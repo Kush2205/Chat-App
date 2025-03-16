@@ -7,28 +7,28 @@ import { useRouter } from "next/navigation";
 const Page = () => {
   const router = useRouter();
 
-  // Define navigation handlers for better debugging
+  
   const handleSignIn = () => {
     console.log("Sign In clicked");
     router.push("/signin");
-  };
+  }
 
   const handleSignUp = () => {
     console.log("Sign Up clicked");
     router.push("/signup");
-  };
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-neutral-900 to-neutral-950 flex flex-col">
-      {/* Hero Section */}
+      
       <div className="flex-1 flex flex-col justify-center items-center text-white px-4 py-20 relative">
-        {/* Background elements */}
+       
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500/10 rounded-full filter blur-3xl"></div>
           <div className="absolute bottom-20 right-10 w-80 h-80 bg-purple-500/10 rounded-full filter blur-3xl"></div>
         </div>
         
-        {/* Logo animation */}
+       
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -44,7 +44,7 @@ const Page = () => {
           </div>
         </motion.div>
         
-        {/* Heading */}
+        
         <motion.h1 
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -54,7 +54,7 @@ const Page = () => {
           Create, Join and Talk in Rooms!
         </motion.h1>
         
-        {/* Subtitle */}
+       
         <motion.p
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -64,9 +64,9 @@ const Page = () => {
           The easiest way to connect with friends, colleagues, and communities in real-time chat rooms.
         </motion.p>
         
-        {/* Action buttons - WITH ANIMATIONS */}
+       
         <div className="flex flex-col sm:flex-row gap-4 mt-10 w-full max-w-md relative z-30">
-          {/* Sign In Button with animation */}
+         
           <motion.div 
             className="w-full sm:w-1/2 relative"
             style={{ pointerEvents: 'auto' }}
@@ -90,7 +90,7 @@ const Page = () => {
             </div>
           </motion.div>
           
-          {/* Sign Up Button with animation */}
+         
           <motion.div 
             className="w-full sm:w-1/2 relative"
             style={{ pointerEvents: 'auto' }}
@@ -112,7 +112,7 @@ const Page = () => {
           </motion.div>
         </div>
         
-        {/* Features section */}
+        
         <motion.div
           initial={{ y: 30, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -151,7 +151,7 @@ const Page = () => {
         </motion.div>
       </div>
       
-      {/* Footer */}
+      
       <div className="py-6 border-t border-neutral-800 text-center text-gray-500 text-sm">
         <p>© {new Date().getFullYear()} Collab Space. All rights reserved.</p>
       </div>

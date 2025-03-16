@@ -1,4 +1,3 @@
-
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -25,7 +24,7 @@ interface ChatUser {
   isOnline?: boolean;
 }
 
-export default function ChatPage() {
+export default function RoomPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [messageInput, setMessageInput] = useState('');
   const [roomName, setRoomName] = useState('Chat Room');
@@ -46,11 +45,36 @@ export default function ChatPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
+  // First effect: Just load data from localStorage and URL parameters
   useEffect(() => {
-    setUserId('user1');
-    setUserName('Demo User');
-    setRoomId('12345');
-    setRoomName('Demo Room');
+    const storedUserId = localStorage.getItem('userId');
+    const storedUserName = localStorage.getItem('user'); // Make sure this matches your storage key
+    const roomIdParam = searchParams.get('roomId');
+    const roomNameParam = searchParams.get('roomName');
+    
+   
+    
+    if (storedUserId) setUserId(storedUserId);
+    if (storedUserName) setUserName(storedUserName);
+    if (roomIdParam) setRoomId(roomIdParam);
+    if (roomNameParam) setRoomName(roomNameParam);
+    
+    console.log('User ID:', storedUserId);
+    const token = localStorage.getItem('token');
+    if (!token) {
+      router.push('/signin');
+    }
+    
+  }, [searchParams, router]);
+  
+  
+  useEffect(() => {
+   
+    if (!userId || !roomId) {
+      return;
+    }
+    
+  
     
     const wsUrl = "ws://localhost:8080";
     ws.current = new WebSocket(wsUrl);
@@ -61,31 +85,29 @@ export default function ChatPage() {
       if (ws.current?.readyState === WebSocket.OPEN) {
         ws.current.send(JSON.stringify({
           command: "connect",
-          userId: 'user1',
-          username: 'Demo User'
+          userId,
+          userName,
+          token: localStorage.getItem('token')
         }));
+
+      
         
         setTimeout(() => {
           if (ws.current?.readyState === WebSocket.OPEN) {
             ws.current.send(JSON.stringify({
               command: "joinRoom",
-              userId: 'user1',
-              roomId: '12345'
+              userId,
+              roomId,
+              token: localStorage.getItem('token')
             }));
           }
         }, 500);
       }
     };
     
-    ws.current.onclose = () => {
-      setIsConnected(false);
-    };
-    
-    ws.current.onerror = (error) => {
-      setError("Failed to connect to chat server. Please try refreshing the page.");
-    };
     
     ws.current.onmessage = (event) => {
+      
       try {
         const data = JSON.parse(event.data);
         
@@ -123,26 +145,21 @@ export default function ChatPage() {
       }
     };
     
-    const checkIfMobile = () => {
-      setIsMobile(window.innerWidth < 768);
+    ws.current.onclose = () => {
+      setIsConnected(false);
     };
     
-    checkIfMobile();
-    window.addEventListener('resize', checkIfMobile);
+    ws.current.onerror = (error) => {
+      setError("Failed to connect to chat server. Please try refreshing the page.");
+    };
     
+    // Add cleanup function
     return () => {
-      window.removeEventListener('resize', checkIfMobile);
-      
       if (ws.current && ws.current.readyState === WebSocket.OPEN) {
-        ws.current.send(JSON.stringify({
-          command: "leaveRoom",
-          userId: 'user1',
-          roomId: '12345'
-        }));
         ws.current.close();
       }
     };
-  }, [router, searchParams]);
+  }, [userId, userName, roomId, roomName]); // Include all values used inside
   
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -168,7 +185,8 @@ export default function ChatPage() {
         command: "message",
         userId,
         roomId,
-        msg: messageInput
+        msg: messageInput,
+        token : localStorage.getItem('token')
       }));
       
       setMessageInput('');
@@ -182,7 +200,8 @@ export default function ChatPage() {
       ws.current.send(JSON.stringify({
         command: "leaveRoom",
         userId,
-        roomId
+        roomId,
+        token : localStorage.getItem('token')
       }));
     }
     

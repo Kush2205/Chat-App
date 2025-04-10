@@ -5,9 +5,10 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Send, User, LogOut, X, Users, Settings, 
-  MessageCircle, ArrowLeft, Menu, Info, Copy, Check
+  MessageCircle, ArrowLeft, Menu, Info, Copy, Check,
+  Pencil // Added Pencil icon for drawing
 } from 'lucide-react';
-import { Button } from "@repo/ui/button";
+import DrawBoard from '../components/DrawBoard/DrawBoard'; // Import DrawBoard component
 
 interface Message {
   id: string;
@@ -38,6 +39,7 @@ export default function RoomPage() {
   const [userName, setUserName] = useState('Demo User');
   const [isCodeCopied, setIsCodeCopied] = useState(false);
   const [isMessageSending, setIsMessageSending] = useState(false);
+  const [showDrawBoard, setShowDrawBoard] = useState(false); // Add state for drawing board
 
   const ws = useRef<WebSocket | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -253,6 +255,20 @@ export default function RoomPage() {
           </div>
           
           <div className="flex items-center gap-2">
+            {/* Add Drawing Board Button */}
+            <button 
+              onClick={() => setShowDrawBoard(!showDrawBoard)}
+              className={`text-sm py-1.5 px-3 rounded-lg flex items-center gap-1 ${
+                showDrawBoard 
+                  ? 'bg-blue-600 hover:bg-blue-700' 
+                  : 'bg-neutral-700 hover:bg-neutral-600'
+              }`}
+              title="Open drawing board"
+            >
+              <Pencil size={16} />
+              <span className="hidden sm:inline">Draw</span>
+            </button>
+            
             <button 
               onClick={leaveRoom}
               className="text-sm bg-neutral-700 hover:bg-neutral-600 py-1.5 px-3 rounded-lg flex items-center gap-1"
@@ -270,84 +286,102 @@ export default function RoomPage() {
           </div>
         </header>
         
-        <div className="flex-1 overflow-y-auto py-4 px-4 space-y-4" style={{ scrollBehavior: 'smooth' }}>
-          {messages.length === 0 ? (
-            <div className="flex h-full items-center justify-center text-gray-400">
-              <div className="text-center">
-                <MessageCircle className="mx-auto text-gray-600 mb-3" size={32} />
-                <p>No messages yet. Start the conversation!</p>
-              </div>
-            </div>
-          ) : (
-            messages.map((msg) => (
-              <div 
-                key={msg.id}
-                className={`flex ${msg.senderId === userId ? 'justify-end' : 'justify-start'}`}
-              >
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className={`
-                    max-w-[80%] sm:max-w-[70%] px-4 py-2.5 rounded-2xl shadow-sm
-                    ${msg.isSystem 
-                      ? 'bg-neutral-700/50 text-gray-300' 
-                      : msg.senderId === userId 
-                        ? 'bg-blue-600' 
-                        : 'bg-neutral-700'}
-                  `}
-                >
-                  {!msg.isSystem && msg.senderId !== userId && (
-                    <div className="font-medium text-xs text-gray-300">{msg.from}</div>
-                  )}
-                  <div className="break-words">{msg.message}</div>
-                  <div className="text-xs text-right mt-1 opacity-70">
-                    {msg.time}
+        {/* Conditional rendering of DrawBoard or Chat */}
+        {showDrawBoard ? (
+          <div className="flex-1 relative">
+            <DrawBoard roomId={roomId} userId={userId} />
+            <button
+              onClick={() => setShowDrawBoard(false)}
+              className="absolute top-4 right-4 bg-neutral-800 hover:bg-neutral-700 p-2 rounded-full shadow-lg z-10"
+              title="Return to chat"
+            >
+              <MessageCircle size={20} />
+            </button>
+          </div>
+        ) : (
+          <>
+            <div className="flex-1 overflow-y-auto py-4 px-4 space-y-4" style={{ scrollBehavior: 'smooth' }}>
+              {/* Existing messages rendering code */}
+              {messages.length === 0 ? (
+                <div className="flex h-full items-center justify-center text-gray-400">
+                  <div className="text-center">
+                    <MessageCircle className="mx-auto text-gray-600 mb-3" size={32} />
+                    <p>No messages yet. Start the conversation!</p>
                   </div>
-                </motion.div>
-              </div>
-            ))
-          )}
-          <div ref={messagesEndRef} />
-          
-          {!isConnected && (
-            <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-red-900/80 text-white rounded-lg px-4 py-2 flex items-center">
-              <span className="animate-pulse mr-2">●</span>
-              <span>Reconnecting to server...</span>
-            </div>
-          )}
-        </div>
-        
-        <div className="bg-neutral-800 px-4 py-3">
-          <div className="flex items-center">
-            <div className="flex-1 relative">
-              <input
-                type="text"
-                value={messageInput}
-                onChange={(e) => setMessageInput(e.target.value)}
-                onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                placeholder="Type your message..."
-                disabled={!isConnected}
-                className="w-full bg-neutral-700 rounded-full py-2.5 pl-4 pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500"
-              />
-              {isMessageSending && (
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                  <div className="animate-spin h-5 w-5 border-2 border-blue-500 rounded-full border-t-transparent"></div>
+                </div>
+              ) : (
+                messages.map((msg) => (
+                  <div 
+                    key={msg.id}
+                    className={`flex ${msg.senderId === userId ? 'justify-end' : 'justify-start'}`}
+                  >
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className={`
+                        max-w-[80%] sm:max-w-[70%] px-4 py-2.5 rounded-2xl shadow-sm
+                        ${msg.isSystem 
+                          ? 'bg-neutral-700/50 text-gray-300' 
+                          : msg.senderId === userId 
+                            ? 'bg-blue-600' 
+                            : 'bg-neutral-700'}
+                      `}
+                    >
+                      {!msg.isSystem && msg.senderId !== userId && (
+                        <div className="font-medium text-xs text-gray-300">{msg.from}</div>
+                      )}
+                      <div className="break-words">{msg.message}</div>
+                      <div className="text-xs text-right mt-1 opacity-70">
+                        {msg.time}
+                      </div>
+                    </motion.div>
+                  </div>
+                ))
+              )}
+              <div ref={messagesEndRef} />
+              
+              {!isConnected && (
+                <div className="fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-red-900/80 text-white rounded-lg px-4 py-2 flex items-center">
+                  <span className="animate-pulse mr-2">●</span>
+                  <span>Reconnecting to server...</span>
                 </div>
               )}
             </div>
-            <button
-              onClick={sendMessage}
-              disabled={!messageInput.trim() || !isConnected}
-              className={`ml-2 p-2.5 rounded-full ${
-                !messageInput.trim() || !isConnected
-                  ? 'bg-neutral-700 text-gray-500 cursor-not-allowed'
-                  : 'bg-blue-600 hover:bg-blue-700 text-white'
-              }`}
-            >
-              <Send size={18} />
-            </button>
-          </div>
-        </div>
+            
+            <div className="bg-neutral-800 px-4 py-3">
+              {/* Existing message input code */}
+              <div className="flex items-center">
+                <div className="flex-1 relative">
+                  <input
+                    type="text"
+                    value={messageInput}
+                    onChange={(e) => setMessageInput(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+                    placeholder="Type your message..."
+                    disabled={!isConnected}
+                    className="w-full bg-neutral-700 rounded-full py-2.5 pl-4 pr-10 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  />
+                  {isMessageSending && (
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                      <div className="animate-spin h-5 w-5 border-2 border-blue-500 rounded-full border-t-transparent"></div>
+                    </div>
+                  )}
+                </div>
+                <button
+                  onClick={sendMessage}
+                  disabled={!messageInput.trim() || !isConnected}
+                  className={`ml-2 p-2.5 rounded-full ${
+                    !messageInput.trim() || !isConnected
+                      ? 'bg-neutral-700 text-gray-500 cursor-not-allowed'
+                      : 'bg-blue-600 hover:bg-blue-700 text-white'
+                  }`}
+                >
+                  <Send size={18} />
+                </button>
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       <AnimatePresence>

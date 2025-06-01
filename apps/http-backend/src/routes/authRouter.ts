@@ -30,7 +30,7 @@ authRouter.post('/signin', async (req: Request, res: Response) => {
             return;
         }
     } catch (e) {
-         res.status(500).json({ error: "Internal Server Error" });
+         res.status(500).json({ error: e });
          return;
     }
 });

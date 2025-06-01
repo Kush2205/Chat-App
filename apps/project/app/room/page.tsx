@@ -79,7 +79,10 @@ function RoomContent() {
   useEffect(() => {
     if (!userId || !roomId) return;
 
-    const wsUrl = "ws://localhost:8080";
+    const wsUrl = process.env.NEXT_PUBLIC_WS_BACKEND;
+    if(!wsUrl) {
+      return;
+    }
     ws.current = new WebSocket(wsUrl);
 
     ws.current.onopen = () => {

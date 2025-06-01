@@ -34,7 +34,7 @@ interface ChatUser {
   isOnline?: boolean;
 }
 
-// Create a separate component that uses useSearchParams
+
 function RoomContent() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [messageInput, setMessageInput] = useState("");
@@ -57,7 +57,7 @@ function RoomContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Load user and room details from localStorage and URL params
+  
   useEffect(() => {
     const storedUserId = localStorage.getItem("userId");
     const storedUserName = localStorage.getItem("user");
@@ -75,7 +75,7 @@ function RoomContent() {
     }
   }, [searchParams, router]);
 
-  // Initialize WebSocket connection and message handlers
+  
   useEffect(() => {
     if (!userId || !roomId) return;
 

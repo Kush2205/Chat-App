@@ -1,7 +1,7 @@
 {
   "name": "excalidraw",
   "private": true,
-  "packageManager": "pnpm@9.0.0",
+  "packageManager": "pnpm@8.7.0",
   "scripts": {
     "prisma:generate": "prisma generate --schema=packages/database/prisma/schema.prisma",
     "build": "pnpm prisma:generate && turbo run build",
